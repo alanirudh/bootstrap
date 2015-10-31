@@ -432,7 +432,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                 return;
               }
               // make sure the tooltip/popover link was not the element clicked (keep in mind, the click event on the link toggles show/hide already)
-              if (e.target !== element[0]) {
+              if (!element[0].contains(e.target)) {
                 // hide by default
                 var shouldHide = true;
                 // loop through all openedTooltips
@@ -443,7 +443,8 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                     continue;
                   }
                   var openedTooltip = openedTooltips.get(ottScopes[index]).value;
-                  if ((openedTooltip.element != null && openedTooltip.element[0].contains(e.target)) || (openedTooltip.triggerElement != null && openedTooltip.triggerElement[0].contains(e.target)))
+                  // don't hide when clicked within the tooltip content
+                  if ((openedTooltip.element != null && openedTooltip.element[0].contains(e.target)))
                   {
                     shouldHide = false;
                     break;
@@ -470,7 +471,8 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
               triggers.hide.forEach(function(trigger) {
                 trigger.split(' ').forEach(function(hideTrigger) {
                   if (trigger === 'outsideClick') {
-                    $document[0].body.removeEventListener('click', bodyHideTooltipBind);
+                    $document[0].removeEventListener('click', bodyHideTooltipBind);
+		                $document[0].removeEventListener('contextmenu', bodyHideTooltipBind);
                   }
                   else
                   {
@@ -491,7 +493,8 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                   // Using raw addEventListener due to jqLite/jQuery bug - #4060
                   if (trigger === 'outsideClick') {
                     element[0].addEventListener('click', toggleTooltipBind);
-                    $document[0].body.addEventListener('click', bodyHideTooltipBind);
+                    $document[0].addEventListener('click', bodyHideTooltipBind);
+		                $document[0].addEventListener('contextmenu', bodyHideTooltipBind);
                   }
                   else if (trigger === triggers.hide[idx]) {
                     element[0].addEventListener(trigger, toggleTooltipBind);

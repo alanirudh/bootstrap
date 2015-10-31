@@ -598,6 +598,25 @@ describe('tooltip', function() {
       tooltipScope.$digest();
       expect(tooltipScope.isOpen).toBeFalsy();
     }));
+
+    it('should toggle on click when child element exist where trigger is set to "outsideClick"', inject(function($compile, $document) {
+      elm = $compile(angular.element(
+        '<div uib-tooltip="tooltip text" tooltip-trigger="outsideClick"><span>Selector Text</span></div>'
+      ))(scope);
+      scope.$apply();
+      elmScope = elm.scope();
+      tooltipScope = elmScope.$$childTail;
+
+      // start off
+      expect(tooltipScope.isOpen).toBeFalsy();
+
+      // toggle
+      trigger(elm, 'click');
+      expect(tooltipScope.isOpen).toBeTruthy();
+      trigger(elm, 'click');
+      expect(tooltipScope.isOpen).toBeFalsy();
+    }));
+    
   });
 
   describe('with an append-to-body attribute', function() {
